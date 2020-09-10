@@ -2,6 +2,7 @@ import pandas as pd
 import os.path
 from os import path
 from typing import Dict, List
+from pathlib import Path
 
 class DfUtils():
     """Toolbox for pandas Dataframe
@@ -11,7 +12,7 @@ class DfUtils():
         self.dataf = dataf
 
     def get_colum(self) -> List:
-        """Return columns label of the dataframe
+        """Return columns label of the data drame
 
         Returns:
             List: array of columns label
@@ -44,18 +45,29 @@ class DfUtils():
 
         return self.dataf.iloc[:, n].values.tolist()
 
-    def df_to_xlsx(self, outputfile: str) -> None:
-        """Save dataframe to xlsx
+    def df_to_file(self, outputfile: str) -> None:
+        """Save dataframe to csv or xlsx file
 
         Args:
-            outputfile (str): xlsx path file
+            outputfile (str): csv path file
         """
+        ext_outpufile = Path(outputfile).suffix
 
+        if ext_outpufile == ".csv":
+            self.__create_directory(outputfile)
+            self.dataf.to_csv(outputfile, index=False, header=True)
+        if ext_outpufile == ".xlsx":
+            self.__create_directory(outputfile)
+            self.dataf.to_excel(outputfile, index=False, header=True)
+
+    def __create_directory(self, pathfile: str) -> None:
+        """Private method to create directory if not exist
+
+        Args:
+            pathfile (str): path directory with filename include
+        """
         # absolute directory path
-        dirpath = path.dirname(outputfile)
-
+        dirpath = path.dirname(pathfile)
+        # create path
         if not path.exists(dirpath):
-            # create path
             os.makedirs(dirpath)
-
-        self.dataf.to_excel(outputfile, index=False, header=True)
